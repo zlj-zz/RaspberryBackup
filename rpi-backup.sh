@@ -31,6 +31,10 @@ echo "...created a blank img, size ${totalsz}M "
 
 # format virtual disk
 bootstart=`sudo fdisk -l | grep $dev_boot | awk '{print $2}'`
+if [ -eq $bootstart '*' ]; then
+  bootstart=`sudo fdisk -l | grep $dev_boot | awk '{print $3}'`
+  bootend=`sudo fdisk -l | grep $dev_boot | awk '{print $4}'`
+fi
 bootend=`sudo fdisk -l | grep $dev_boot | awk '{print $3}'`
 rootstart=`sudo fdisk -l | grep $dev_root | awk '{print $2}'`
 echo "boot: $bootstart >>> $bootend, root: $rootstart >>> end"
@@ -43,7 +47,7 @@ sudo parted $img --script -- mkpart primary ext4 ${rootstart}s -1
 
 echo =====================  part 3, mount img to system  ===============================
 loopdevice=`sudo losetup -f --show $img`
-device=/dev/mapper/`sudo kpartx -va $loopdevice | sed -E 's/.*(loop[0-9])p.*/\1/g' | head -1`
+device=/dev/mapper/`sudo kpartx -va $loopdevice | sed -E 's/.*(loop[0-9]+)p.*/\1/g' | head -1`
 sleep 5
 sudo mkfs.vfat ${device}p1 -n boot
 sudo mkfs.ext4 ${device}p2 -L rootfs
