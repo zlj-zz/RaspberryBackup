@@ -28,7 +28,6 @@ else
   echo "not installed: ${not_installed}"
   echo -e "\n==> try install..."
   if type apt-get>/dev/null 2>&1; then
-    echo 111
     sudo apt install ${not_installed}
   elif type pacman>/dev/null 2>&1; then
     echo 222
@@ -61,7 +60,7 @@ fi
 rootstart=`sudo fdisk -l | grep $dev_root | awk '{print $2}'`
 #有些系统 sudo fdisk -l 时boot分区的boot标记会标记为*,此时bootstart和bootend最后应改为 $3 和 $4
 #rootend=`sudo fdisk -l /dev/mmcblk0 | grep mmcblk0p2 | awk '{print $3}'`
-echo -e "\n==> boot: $bootstart >>> $bootend, root: $rootstart >>> end; initialize backup img ...\n"
+echo -e "\n==> boot: $bootstart - $bootend, root: $rootstart - end; initialize backup img ...\n"
 
 # initialize backup img.
 sudo parted $img --script -- mklabel msdos
@@ -129,14 +128,14 @@ echo "...unmount done"
 echo "===================== part 7, compress ========================="
 echo "Do you want to use gzip for compression?[Y/n]:"
 read isCompress
-if [[ ${isCompress} -eq 'Y' || ${isCompress} -eq 'y' ]]; then
+if [[ ${isCompress} = 'Y' || ${isCompress} = 'y' ]]; then
   echo -e "\n==> compressing..."
   sudo gzip ${img}
   sync
   echo "...Compress done"
 else
   echo "No compression"
-if
+fi
 
 echo -e "\n\nWhere the img?"
-echo "    img file is under ~/backupimg/ "
+echo "    img file is under ~/backupimg/"
