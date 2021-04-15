@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [  $# != 2 ]; then
   echo "argument error: Usage: $0 boot_device_name root_device_name"
@@ -14,7 +14,7 @@ mounted_root=`df -h | grep $dev_root | awk '{print $6}'`
 img=rpi-`date +%Y%m%d-%H%M`.img
 
 echo "==> check tools..."
-NEED_TOOLS=(dosfstools dump parted kpartx gzip)
+NEED_TOOLS="dosfstools dump parted kpartx gzip"
 not_installed=""
 for nt in ${NEED_TOOLS[@]}; do
   if ! type ${nt}>/dev/null 2>&1;then
@@ -26,7 +26,7 @@ if [ ! -n "${not_installed}" ]; then
   echo "...all need tools was installed."
 else
   echo "not installed: ${not_installed}"
-  echo "\n==> try install..."
+  echo -e "\n==> try install..."
   if type apt-get>/dev/null 2>&1; then
     echo 111
     sudo apt install ${not_installed}
@@ -39,7 +39,7 @@ else
   fi
 fi
 
-echo "\n==>prepare workspace ...\n"
+echo -e "\n==>prepare workspace ...\n"
 mkdir ~/backupimg
 cd ~/backupimg
 
@@ -47,7 +47,7 @@ cd ~/backupimg
 bootsz=`df -P | grep $dev_boot | awk '{print $2}'`
 rootsz=`df -P | grep $dev_root | awk '{print $3}'`
 totalsz=`echo $bootsz $rootsz | awk '{print int(($1+$2)*1.3/1024)}'`
-echo "\n==> created a blank img, size ${totalsz}M ...\n"
+echo -e "\n==> created a blank img, size ${totalsz}M ...\n"
 sudo dd if=/dev/zero of=$img bs=1M count=$totalsz status=progress
 #sync
 
@@ -61,7 +61,7 @@ fi
 rootstart=`sudo fdisk -l | grep $dev_root | awk '{print $2}'`
 #有些系统 sudo fdisk -l 时boot分区的boot标记会标记为*,此时bootstart和bootend最后应改为 $3 和 $4
 #rootend=`sudo fdisk -l /dev/mmcblk0 | grep mmcblk0p2 | awk '{print $3}'`
-echo "\n==> boot: $bootstart >>> $bootend, root: $rootstart >>> end; initialize backup img ...\n"
+echo -e "\n==> boot: $bootstart >>> $bootend, root: $rootstart >>> end; initialize backup img ...\n"
 
 # initialize backup img.
 sudo parted $img --script -- mklabel msdos
@@ -113,7 +113,7 @@ sudo sed -i "s/$opartuuidb/$npartuuidb/g" ./tgt_Root/etc/fstab
 sudo sed -i "s/$opartuuidr/$npartuuidr/g" ./tgt_Root/etc/fstab
 echo "...replace PARTUUID done"
 
-echo "\n==> remove auto generated files"
+echo -e "\n==> remove auto generated files"
 #下面内容是删除树莓派中系统自动产生的文件、临时文件等
 cd ~/backupimg/tgt_Root
 sudo rm -rf ./.gvfs ./dev/* ./media/* ./mnt/* ./proc/* ./run/* ./sys/* ./tmp/* ./lost+found/ ./restoresymtable
@@ -130,7 +130,7 @@ echo "===================== part 7, compress ========================="
 echo "Do you want to use gzip for compression?[Y/n]:"
 read isCompress
 if [[ ${isCompress} -eq 'Y' || ${isCompress} -eq 'y' ]]; then
-  echo "\n==> compressing..."
+  echo -e "\n==> compressing..."
   sudo gzip ${img}
   sync
   echo "...Compress done"
@@ -138,5 +138,5 @@ else
   echo "No compression"
 if
 
-echo "\n\nWhere the img?"
+echo -e "\n\nWhere the img?"
 echo "    img file is under ~/backupimg/ "
