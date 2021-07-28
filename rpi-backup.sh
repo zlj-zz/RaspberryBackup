@@ -53,7 +53,7 @@ sudo dd if=/dev/zero of=$img bs=1M count=$totalsz status=progress
 # format virtual disk
 bootstart=`sudo fdisk -l | grep $dev_boot | awk '{print $2}'`
 bootend=`sudo fdisk -l | grep $dev_boot | awk '{print $3}'`
-if [ $bootstart == '*' ]; then
+if [[ $bootstart == '*' ]]; then
   bootstart=`sudo fdisk -l | grep $dev_boot | awk '{print $3}'`
   bootend=`sudo fdisk -l | grep $dev_boot | awk '{print $4}'`
 fi
