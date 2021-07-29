@@ -30,7 +30,6 @@ else
   if type apt-get>/dev/null 2>&1; then
     sudo apt install ${not_installed}
   elif type pacman>/dev/null 2>&1; then
-    echo 222
     sudo pacman -S ${not_installed}
   else
     echo "Automatic installation does not support this system, please try to install manually."
@@ -47,7 +46,7 @@ bootsz=`df -P | grep $dev_boot | awk '{print $2}'`
 rootsz=`df -P | grep $dev_root | awk '{print $3}'`
 totalsz=`echo $bootsz $rootsz | awk '{print int(($1+$2)*1.3/1024)}'`
 echo -e "\n==> created a blank img, size ${totalsz}M ...\n"
-sudo dd if=/dev/zero of=$img bs=1M count=$totalsz status=progress
+sudo dd if=/dev/zero of=$img bs=4M count=$totalsz status=progress
 #sync
 
 # format virtual disk
